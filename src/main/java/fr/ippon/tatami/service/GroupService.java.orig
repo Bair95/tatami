@@ -92,8 +92,11 @@ public class GroupService {
             dto.setFirstName(user.getFirstName());
             dto.setLastName(user.getLastName());
             dto.setRole(member.getValue());
+<<<<<<< HEAD
             dto.setActivated(user.getActivated());
+=======
             dto.setGroupId(groupId);
+>>>>>>> b9da8c6... Work in progress : demander à rejoindre un groupe
             if (friendLogins.contains(user.getLogin())) {
                 dto.setFriend(true);
             }
@@ -327,7 +330,7 @@ public class GroupService {
                     group.setMember(true);
                 }
             }
-
+<<<<<<< HEAD
             long counter = 0;
             for ( UserGroupDTO userGroup :  getMembersForGroup(group.getGroupId(),authenticationService.getCurrentUser().getLogin()) ) {
                 if(userGroup.isActivated()) {
@@ -335,7 +338,10 @@ public class GroupService {
                 }
             }
             group.setCounter(counter);
+=======
 
+            group.setCounter(groupCounterRepository.getGroupCounter(user.getDomain(), group.getGroupId()));
+>>>>>>> b9da8c6... Work in progress : demander à rejoindre un groupe
         }
         return group;
     }
