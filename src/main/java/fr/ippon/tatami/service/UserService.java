@@ -2,7 +2,6 @@ package fr.ippon.tatami.service;
 
 import fr.ippon.tatami.config.Constants;
 import fr.ippon.tatami.domain.DigestType;
-import fr.ippon.tatami.domain.Group;
 import fr.ippon.tatami.domain.User;
 import fr.ippon.tatami.repository.*;
 import fr.ippon.tatami.security.AuthenticationService;
@@ -21,7 +20,6 @@ import org.springframework.cache.annotation.CacheEvict;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
-import java.nio.file.SecureDirectoryStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -39,12 +37,6 @@ public class UserService {
 
     @Inject
     private UserRepository userRepository;
-
-    @Inject
-    private GroupService groupService;
-
-    @Inject
-    private GroupCounterRepository groupCounterRepository;
 
     @Inject
     private DomainRepository domainRepository;
