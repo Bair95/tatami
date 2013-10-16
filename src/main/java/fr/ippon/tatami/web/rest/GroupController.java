@@ -1,6 +1,7 @@
 package fr.ippon.tatami.web.rest;
 
 import com.yammer.metrics.annotation.Timed;
+import fr.ippon.tatami.config.GroupRoles;
 import fr.ippon.tatami.domain.Group;
 import fr.ippon.tatami.domain.User;
 import fr.ippon.tatami.security.AuthenticationService;
@@ -87,9 +88,14 @@ public class GroupController {
         } else {
             Group result = getGroupFromUser(currentUser, groupId);
             Group groupClone = null;
-            if (result == null) {
+            if (result == null ) {
                 log.info("Permission denied! User {} tried to access group ID = {} ", currentUser.getLogin(), groupId);
-                return null;
+                result =  new Group();
+                result.setName(publicGroup.getName());
+                result.setGroupId(groupId);
+                return result;
+            } else if( groupService.getMembersForGroup(groupId,currentUser) == null ){
+                return result;
             } else {
                 groupClone = (Group) result.clone();
                 groupClone.setMember(true);
@@ -156,7 +162,7 @@ public class GroupController {
             count = 20;
         }
         Group group = this.getGroup(groupId);
-        if (group == null) {
+        if (group == null || (!group.isPublicGroup() && !group.isMember()) ) {
             return new ArrayList<StatusDTO>();
         } else {
             return timelineService.getGroupline(groupId, count, start, finish);
@@ -353,7 +359,9 @@ public class GroupController {
             if (isGroupManagedByCurrentUser(currentGroup) && !currentUser.equals(userToremove)) {
                 groupService.removeMemberFromGroup(userToremove, currentGroup);
                 groupService.getMembersForGroup(groupId, userToremove);
-            } else if (currentGroup.isPublicGroup() && currentUser.equals(userToremove) && !isGroupManagedByCurrentUser(currentGroup)) {
+            }
+            //A user can leave a group, even if the group is private.
+            else if (currentUser.equals(userToremove) && !isGroupManagedByCurrentUser(currentGroup)) {
                 groupService.removeMemberFromGroup(userToremove, currentGroup);
                 groupService.getMembersForGroup(groupId, userToremove);
             } else {

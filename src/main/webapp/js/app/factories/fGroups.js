@@ -14,19 +14,19 @@
                 groups.add(group);
                 group.fetch({
                     error: function(){
-                        Tatami.app.router.defaults();
+                        group.set('publicGroup',false);
                     }
                 });
             }
-
             return new Tatami.Views.GroupsHeader({
               model: group
             });
         },
         groupsBody: function(groupId){
-            return new Tatami.Views.GroupsBody({
+            var body = new Tatami.Views.GroupsBody({
                 group: groupId
             });
+            return body;
         }, 
         groupsUser: function(groupId){
             var c = new Tatami.Collections.UsersInGroup();

@@ -106,6 +106,15 @@ public class MailService {
     }
 
     @Async
+    public void sendGroupRequestNotification(User user, Group group,boolean accepted){
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("user", user.getLogin());
+        model.put("group", group.getName());
+        String answer = accepted?"acceptée.":"refusée.";
+        model.put("answer",answer);
+        sendTextFromTemplate(user.getLogin(), model, "groupRequestNotification", this.locale);
+    }
+    @Async
     public void sendLostPasswordEmail(String registrationKey, User user) {
 
         String url = tatamiUrl + "/tatami/register?key=" + registrationKey;

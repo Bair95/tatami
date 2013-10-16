@@ -26,4 +26,5 @@ public interface GroupMembersRepository {
     Map<String, String> findMembers(String groupId);
     
     Map<String, String> findPendingMembers(String groupId);
+
 }

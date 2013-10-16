@@ -98,7 +98,9 @@
 
         acceptUser : function() {
         	this.model.url = this.model.urlRoot+'/tatami/rest/groups/'+this.model.attributes.groupId+'/requests/'+this.model.id;
-        	this.model.save();
+            this.model.set('role', 'MEMBER');
+            this.model.set('member', true);
+            this.model.save();
         },
 
         rejectUser : function() {

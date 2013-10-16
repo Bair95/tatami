@@ -420,7 +420,7 @@
                       </a>
                   <@ } else { @>
                       <@ if(waitingForApproval) { @>
-                          <span class="hidden-phone">Demande d'invitation envoyée</span>
+                          <span class="hidden-phone"><fmt:message key="tatami.group.join.asked"/></span>
                       <@ } else { @>
                           <a class="btn-title toggleGroup pull-right label labelSizeNormal <@= (member)?'label-info':'' @>">
                               <span class="glyphicon glyphicon-plus"> <span class="hidden-phone"><fmt:message key="tatami.group.join"/></span></span>
@@ -479,10 +479,10 @@
         </button>
         <@ }  else if(role === 'PENDING') { @>
         <button type="button" class="btn btn-success input-block-level accept">
-            Accepter
+            <fmt:message key="tatami.group.join.accept"/>
         </button>
         <button type="button" class="btn btn-danger input-block-level reject">
-            Rejeter
+            <fmt:message key="tatami.group.join.reject"/>
         </button>
         <@ } @>
     </td>

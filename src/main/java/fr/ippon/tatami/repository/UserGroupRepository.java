@@ -19,4 +19,7 @@ public interface UserGroupRepository {
     List<String> findGroups(String login);
 
     Collection<String> findGroupsAsAdmin(String login);
+
+    void addGroupAsPending(String login, String groupId);
+
 }

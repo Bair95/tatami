@@ -1,5 +1,6 @@
 package fr.ippon.tatami.service;
 
+import fr.ippon.tatami.config.GroupRoles;
 import fr.ippon.tatami.domain.Group;
 import fr.ippon.tatami.domain.User;
 import fr.ippon.tatami.repository.*;
@@ -48,6 +49,9 @@ public class GroupService {
 
     @Inject
     private SearchService searchService;
+
+    @Inject
+    private MailService mailService;
 
     @Inject
     private FriendRepository friendRepository;
@@ -128,7 +132,7 @@ public class GroupService {
     }
 
 
-    @Cacheable(value = "group-user-cache", key = "#user.login")
+    //@Cacheable(value = "group-user-cache", key = "#user.login")
     public Collection<Group> getGroupsForUser(User user) {
         Collection<String> groupIds = userGroupRepository.findGroups(user.getLogin());
         return buildGroupIdsList(groupIds);
@@ -216,7 +220,7 @@ public class GroupService {
             log.debug("User {} is not a member of group {}", user.getLogin(), group.getName());
         }
     }
-    
+
     public void requestToJoin(User user, Group group) {
     	String groupId = group.getGroupId();
     	Collection<String> userCurrentGroupIds = userGroupRepository.findGroups(user.getLogin());
@@ -227,34 +231,37 @@ public class GroupService {
     		}
     	}
     	if (!userIsAlreadyAMember) {
-    		groupMembersRepository.requestApproval(groupId, user.getLogin());
+            userGroupRepository.addGroupAsPending(user.getLogin(), groupId);
+            groupMembersRepository.requestApproval(groupId, user.getLogin());
     	} else {
     		log.debug("User {} is already a member of group {}", user.getLogin(), group.getName());
     	}
     }
-    
+
+    @CacheEvict(value = {"group-user-cache","group-cache"}, key= "#user.login")
     public void acceptRequestToJoin(User user, Group group) {
     	String groupId = group.getGroupId();
-        Collection<String> userCurrentGroupIds = userGroupRepository.findGroups(user.getLogin());
+        String login = user.getLogin();
         boolean userIsAlreadyAMember = false;
-        for (String testGroupId : userCurrentGroupIds) {
-            if (testGroupId.equals(groupId)) {
-                userIsAlreadyAMember = true;
-            }
+        if ( groupMembersRepository.findMembers(group.getGroupId()).get(login) != null ) {
+            userIsAlreadyAMember = true;
         }
         if (!userIsAlreadyAMember) {
         	groupMembersRepository.acceptRequest(group.getGroupId(), user.getLogin());
             log.debug("user=" + user);
             groupCounterRepository.incrementGroupCounter(user.getDomain(), groupId);
             userGroupRepository.addGroupAsMember(user.getLogin(), groupId);
+            mailService.sendGroupRequestNotification(user,group,true);
         } else {
             log.debug("User {} is already a member of group {}", user.getLogin(), group.getName());
         }
     }
     
-    @CacheEvict(value = "group-cache", allEntries = true)
+    @CacheEvict(value = {"group-cache","group-prefix-cache"}, allEntries = true)
     public void rejectRequestToJoin(User user, Group group) {
     	groupMembersRepository.rejectRequest(group.getGroupId(), user.getLogin());
+        userGroupRepository.removeGroup(user.getLogin(), group.getGroupId());
+        mailService.sendGroupRequestNotification(user,group,false);
     }
 
 
@@ -329,8 +336,8 @@ public class GroupService {
             }
 
             long counter = 0;
-            for ( UserGroupDTO userGroup :  getMembersForGroup(group.getGroupId(),authenticationService.getCurrentUser().getLogin()) ) {
-                if(userGroup.isActivated()) {
+            for ( UserGroupDTO userGroup : getMembersForGroup(group.getGroupId(),authenticationService.getCurrentUser().getLogin()) ) {
+                if(userGroup.isActivated() && !userGroup.getRole().equals(GroupRoles.PENDING)) {
                     counter++;
                 }
             }

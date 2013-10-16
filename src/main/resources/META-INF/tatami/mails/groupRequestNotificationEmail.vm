@@ -1,0 +1,8 @@
+#parse("common.vm")
+#msg("groupRequestNotification.greeting") ${user},
+
+#msg("groupRequestNotification.text1")  ${group} #msg("groupRequestNotification.text2") ${answer}
+
+#msg("groupRequestNotification.text3")
+
+#msg("email.signature")

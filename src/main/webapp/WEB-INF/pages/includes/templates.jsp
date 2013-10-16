@@ -18,7 +18,7 @@
 </script>
 <script type="text/template" id="GroupsHeader">
     <h3>
-        <strong><fmt:message key="tatami.group.name"/> : <@= name @><strong>
+        <strong><fmt:message key="tatami.group.name"/> : <@= name @></strong>
         <@ if(publicGroup && !administrator) { @>
             <a class="btn-title toggleTag pull-right label <@= (member)?'label-info':'' @>">
                 <@ if(member) { @>
@@ -31,8 +31,24 @@
             <a href="/tatami/account/#/groups/<@= groupId @>" class="btn-title toggleTag pull-right label label-info hidden-phone">
                 <span class="glyphicon glyphicon-th-large"> <span><fmt:message key="tatami.group.edit.link"/></span></span>
             </a>
+        <@ } else if ( !publicGroup && !waitingForApproval && !member) { @>
+            <a class="btn-title toggleTag pull-right label label-info"><span class="glyphicon glyphicon-plus"> <span class="hidden-phone"><fmt:message key="tatami.group.join"/></span></span></a>
+        <@ } else if ( !publicGroup && member ) { @>
+            <a class="btn-title toggleTag pull-right label"><span class="glyphicon glyphicon-minus"> <span class="hidden-phone"><fmt:message key="tatami.user.followed"/></span></span></a>
+        <@ } else if (!publicGroup && waitingForApproval) { @>
+                ( <fmt:message key="tatami.group.join.asked"/> )
         <@ } @>
     </h3>
+    <@if(!publicGroup && !member) { @>
+       <span class="" style="padding:1em;">
+            <strong>Ce groupe est priv&eacute;.</strong>
+            <p  style="padding:1em;">Vous pouvez faire une demande d'admission qui sera transmise &agrave; l'administrateur de ce groupe.
+               Une notification vous sera envoy&eacute;e pour vous signifier l'acceptation ou le rejet de votre demande.
+            </p>
+       </span>
+    <@ } @>
+
+
 </script>
 <script type="text/template" id="SearchHeader">
     <h3><strong> <fmt:message key="tatami.user.search.searchInStatus"/> :  "<@= input @>"</strong></h3>
@@ -455,7 +471,7 @@
     </div>
 </script>
 <script type="text/template" id="GroupItems">
-    <a href="#groups/<@= groupId @>"><@= name @></a>
+    <a href="#groups/<@= groupId @>"><@= name @></a>  <@ if(waitingForApproval){ @> ( Demande envoy&eacute;e ) <@}@>
 </script>
 <script type="text/template" id="StatusAttachmentItems">
         <a href="/tatami/file/<@= attachmentId @>/<@= filename @>" class="btn-link status-action" target="_blank">
@@ -468,7 +484,7 @@
     <@} else if(cat.category == 'users') { @>
         <li class="category <@= cat.category @>"><span class="glyphicon glyphicon-user"></span></li>
     <@} else { @>
-        <li class="category <@= cat.category @>"><span class="glyphicon glyphicon-th-large"></span></i></li>
+        <li class="category <@= cat.category @>"><span class="glyphicon glyphicon-th-large"></span></li>
     <@}@>
 </script>
 <script type="text/template" id="search-category-item">
@@ -654,7 +670,7 @@
         </div>
         <section class="tatams-container">
         </section>
-    </section> 
+    </section>
 </script>
 <script type="text/template" id="UserItems">
     <div class='pull-left background-image-fffix'>
@@ -684,6 +700,7 @@
                 @<@= username @>
             </small>
         </a>
+        <@ if(role == "PENDING"){@> En attente d'approbation <@}@>
         <@ if(desactivable) { @>
         <sec:authorize ifAnyGranted="ROLE_ADMIN">
             <span class="desactivateUser pointer pull-right label label-<@ if(activated) { @>danger<@ } else {@>success<@} @>">

@@ -193,7 +193,7 @@ public class TimelineService {
         Collection<StatusDTO> statuses = new ArrayList<StatusDTO>(line.size());
         for (String statusId : line) {
             AbstractStatus abstractStatus = statusRepository.findStatusById(statusId);
-            if (abstractStatus != null) {
+            if (abstractStatus != null ) {
                 User statusUser = userService.getUserByLogin(abstractStatus.getLogin());
                 if (statusUser != null) {
                     // Security check
@@ -327,9 +327,12 @@ public class TimelineService {
         boolean hiddenStatus = false;
         if (status.getGroupId() != null) {
             statusDTO.setGroupId(status.getGroupId());
-            Group group = groupService.getGroupById(statusUser.getDomain(), statusDTO.getGroupId());
+            Group group = groupService.buildGroupIds(statusUser, statusDTO.getGroupId());
+            if ( group == null ) {
+                group = groupService.getGroupById(statusUser.getDomain(),statusDTO.getGroupId());
+            }
             // if this is a private group and the user is not part of it, he cannot see the status
-            if (!group.isPublicGroup() && !usergroups.contains(group)) {
+            if (!group.isPublicGroup() && (!usergroups.contains(group) ||group.isWaitingForApproval()) ) {
                 hiddenStatus = true;
             } else {
                 statusDTO.setPublicGroup(group.isPublicGroup());

@@ -38,6 +38,9 @@
             <properties>
                 <!-- Spring profiles available : tatamibot, metrics, apple-push -->
                 <spring.profiles.active></spring.profiles.active>
+                <tatami.smtp.host>localhost</tatami.smtp.host>
+                <tatami.smtp.port>25</tatami.smtp.port>
+                <tatami.smtp.from>bertrand.richard8@gmail.com</tatami.smtp.from>
             </properties>
         </profile>
         <profile>

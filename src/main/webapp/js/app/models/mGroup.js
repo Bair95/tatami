@@ -10,7 +10,8 @@
             description: '',
             counter: 0,
             member: false, 
-            administrator: false
+            administrator: false,
+            waitingForApproval: false
         },
         toggleMember: function(name){            
             this.url = this.urlRoot+'/'+this.id+'/members/'+name;

@@ -4,6 +4,7 @@ import static fr.ippon.tatami.config.ColumnFamilyKeys.GROUP_MEMBERS_CF;
 import static me.prettyprint.hector.api.factory.HFactory.createSliceQuery;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -60,7 +61,8 @@ public class CassandraGroupMembersRepository implements GroupMembersRepository {
         mutator.insert(groupId, GROUP_MEMBERS_CF, HFactory.createColumn(login,
                 GroupRoles.PENDING, StringSerializer.get(), StringSerializer.get()));
     }
-    
+
+
     @Override
     public void acceptRequest(String groupId, String login) {
     	addMember(groupId, login);

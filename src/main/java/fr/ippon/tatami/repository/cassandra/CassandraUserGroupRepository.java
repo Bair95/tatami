@@ -42,6 +42,12 @@ public class CassandraUserGroupRepository implements UserGroupRepository {
     }
 
     @Override
+    public void addGroupAsPending(String login, String groupId) {
+        Mutator<String> mutator = HFactory.createMutator(keyspaceOperator, StringSerializer.get());
+        mutator.insert(login, USER_GROUPS_CF, HFactory.createColumn(groupId,
+                GroupRoles.PENDING, StringSerializer.get(), StringSerializer.get()));
+    }
+    @Override
     public void addGroupAsAdmin(String login, String groupId) {
         Mutator<String> mutator = HFactory.createMutator(keyspaceOperator, StringSerializer.get());
         mutator.insert(login, USER_GROUPS_CF, HFactory.createColumn(groupId,
